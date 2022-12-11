@@ -12,62 +12,48 @@ const colsMap: number[][] = [];
 
 let topScenicScore = 0;
 
-const scenicScoreForGroup = (
-	treeHeight: number,
+const wholeNumber = (value: number) => Math.max(0, value);
+
+const getScenicScore = (
 	diagram: number[][],
-	group: number,
-	index: number
+	currentTree: number,
+	row: number,
+	col: number
 ) => {
-	const currentTree = treeHeight;
-	const treesOnStartSide = diagram[group].slice(0, index);
-	let firstVisibleIndex = treesOnStartSide.findLastIndex((priorTree) => {
-		return Number(priorTree) >= currentTree;
-	});
-	firstVisibleIndex = firstVisibleIndex === -1 ? 0 : firstVisibleIndex;
-	const treesVisibleTowardsStart = treesOnStartSide.length - firstVisibleIndex;
+	const treesBefore = diagram[row].slice(0, col);
+	const visibleBefore =
+		treesBefore.length -
+		wholeNumber(treesBefore.findLastIndex((tree) => tree >= currentTree));
 
-	const treesOnEndSide = diagram[group].slice(index + 1);
-	let lastVisibleIndex = treesOnEndSide.findIndex(
-		(followingTree) => Number(followingTree) >= currentTree
-	);
-	lastVisibleIndex =
-		lastVisibleIndex === -1 ? treesOnEndSide.length - 1 : lastVisibleIndex;
-	const treesVisibleTowardsEnd = lastVisibleIndex + 1;
+	const treesAfter = diagram[row].slice(col + 1);
+	const lastVisible = treesAfter.findIndex((tree) => tree >= currentTree);
+	const visibleAfter = lastVisible === -1 ? treesAfter.length : lastVisible + 1;
 
-	return treesVisibleTowardsStart * treesVisibleTowardsEnd;
+	return visibleBefore * visibleAfter;
 };
 
-const totalScenicScore = (treeHeight: number, row: number, col: number) => {
-	return (
-		scenicScoreForGroup(treeHeight, rowsMap, row, col) *
-		scenicScoreForGroup(treeHeight, colsMap, col, row)
-	);
-};
+const treeScenicScore = (height: number, row: number, col: number) =>
+	getScenicScore(rowsMap, height, row, col) *
+	getScenicScore(colsMap, height, col, row);
 
 treeMap
 	.trim()
 	.split("\n")
 	.map((line, row) => {
-		line.split("").map((height, col) => {
-			rowsMap[row]
-				? rowsMap[row].push(Number(height))
-				: (rowsMap[row] = [Number(height)]);
-			colsMap[col]
-				? colsMap[col].push(Number(height))
-				: (colsMap[col] = [Number(height)]);
-		});
+		line
+			.split("")
+			.map(Number)
+			.map((height, col) => {
+				rowsMap[row] ? rowsMap[row].push(height) : (rowsMap[row] = [height]);
+				colsMap[col] ? colsMap[col].push(height) : (colsMap[col] = [height]);
+			});
 	});
 
-treeMap
-	.trim()
-	.split("\n")
-	.map((line, row) => {
-		line.split("").map((tree, col) => {
-			// console.log({ tree }, { row }, { col });
-			const height = Number(tree);
-			const currentScore = totalScenicScore(height, row, col);
-			if (currentScore > topScenicScore) topScenicScore = currentScore;
-		});
+rowsMap.map((line, row) => {
+	line.map((height, col) => {
+		const currentScore = treeScenicScore(height, row, col);
+		if (currentScore > topScenicScore) topScenicScore = currentScore;
 	});
+});
 
 console.log({ topScenicScore });
