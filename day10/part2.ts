@@ -7,29 +7,27 @@ program.split("\n").reduce((spritePosition: number, line: string) => {
 	while (cycle < 240) {
 		const [command, v] = line.split(" ");
 
-		const writeOutput = () => {
-			const currentLine = Math.floor((cycle - 1) / 40);
-			const currentIndex = (cycle - 1) % 40;
-			const spriteIndex = spritePosition % 40;
-
+		const write = () => {
+			cycle += 1;
+			const row = Math.floor((cycle - 1) / 40);
+			const column = (cycle - 1) % 40;
+			const spriteColumn = (spritePosition - 1) % 40;
 			const isSpriteVisible =
-				currentIndex >= spriteIndex - 1 && currentIndex <= spriteIndex + 1;
+				column >= spriteColumn - 1 && column <= spriteColumn + 1;
 
-			if (!output[currentLine]) output[currentLine] = "";
-			if (isSpriteVisible) output[currentLine] = output[currentLine] + "#";
-			else output[currentLine] = output[currentLine] + ".";
+			if (!output[row]) output[row] = "";
+			const pixel = isSpriteVisible ? "#" : ".";
+			output[row] = output[row] + pixel;
 		};
 
 		if (command === "addx" && v) {
-			cycle += 1;
-			writeOutput();
-			cycle += 1;
-		} else cycle += 1;
-		writeOutput();
+			write();
+		}
+		write();
 
 		return v ? Number(spritePosition) + Number(v) : Number(spritePosition);
 	}
 	return spritePosition;
-}, 1);
+}, 2);
 
 console.log({ output });
