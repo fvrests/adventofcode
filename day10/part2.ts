@@ -3,7 +3,6 @@ const program = await Deno.readTextFile("program.txt");
 const output: string[] = [""];
 let cycle = 0;
 
-// fix: address type error on below line
 program.split("\n").reduce((spritePosition: number, line: string) => {
 	while (cycle < 240) {
 		const [command, v] = line.split(" ");
@@ -30,7 +29,7 @@ program.split("\n").reduce((spritePosition: number, line: string) => {
 
 		return v ? Number(spritePosition) + Number(v) : Number(spritePosition);
 	}
-	return;
+	return spritePosition;
 }, 1);
 
 console.log({ output });
