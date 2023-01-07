@@ -3,6 +3,13 @@ const notes = await Deno.readTextFile("notes.txt");
 const caughtItems: number[][] = [];
 const inspections: number[] = [];
 
+let lcm = 1;
+notes.split("\n\n").map((specs) => {
+	const divisor = Number(specs.match(/Test: divisible by (\d+)/)![1]);
+	lcm = lcm * divisor;
+}, []);
+console.log({ lcm });
+
 const inspectItem = (item: number, operator: string, value: number) => {
 	let worry = item;
 	if (operator === "+") {
@@ -11,7 +18,7 @@ const inspectItem = (item: number, operator: string, value: number) => {
 	if (operator === "*") {
 		worry = item * value;
 	}
-	return Math.floor(worry / 3);
+	return worry % lcm;
 };
 
 const throwItem = (worry: number, recipient: number) => {
@@ -35,8 +42,6 @@ const playTurn = (specs: string, monkey: number, round: number) => {
 	const ifFalse = Number(specs.match(/If false: throw to monkey (\d+)/)![1]);
 
 	if (caughtItems[monkey]) items.push(...caughtItems[monkey]);
-	console.log("caught", caughtItems);
-	console.log("inspections", inspections);
 	caughtItems[monkey] = [];
 
 	items.map((item: number) => {
@@ -60,7 +65,7 @@ const playRounds = (count: number) => {
 	}
 };
 
-playRounds(20);
+playRounds(10000);
 console.log({ inspections });
 
 const getMonkeyBusiness = (arr: number[]) => {
