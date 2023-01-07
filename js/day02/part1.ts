@@ -1,22 +1,20 @@
-const decoder = new TextDecoder("utf-8");
-const data = Deno.readFileSync("strategyguide.txt");
-const fileContents = decoder.decode(data);
+const fileContents = await Deno.readTextFile("strategyguide.txt");
 
 // rock, paper, scissors
-let opponentMoves = ["a", "b", "c"];
+const opponentMoves = ["a", "b", "c"];
 // rock, paper, scissors
-let heroMoves = ["x", "y", "z"];
+const heroMoves = ["x", "y", "z"];
 // rock, paper, scissors
-let shapeValues = [1, 2, 3];
+const shapeValues = [1, 2, 3];
 
-let totalPoints = fileContents
+const totalPoints = fileContents
   .split("\n")
   .map((line) => {
-    let [opponentMove, heroMove] = line.split(" ");
+    const [opponentMove, heroMove] = line.split(" ");
     if (!opponentMove || !heroMove) return 0;
 
-    let opponentIndex = opponentMoves.indexOf(opponentMove.toLowerCase());
-    let heroIndex = heroMoves.indexOf(heroMove.toLowerCase());
+    const opponentIndex = opponentMoves.indexOf(opponentMove.toLowerCase());
+    const heroIndex = heroMoves.indexOf(heroMove.toLowerCase());
 
     let outcomePoints = 0;
     switch (opponentIndex - heroIndex) {

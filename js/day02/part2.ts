@@ -1,31 +1,26 @@
-const decoder = new TextDecoder("utf-8");
-const data = Deno.readFileSync("strategyguide.txt");
-const fileContents = decoder.decode(data);
+const fileContents = await Deno.readTextFile("strategyguide.txt");
 
 // rock, paper, scissors
-let opponentMoves = ["a", "b", "c"];
+const opponentMoves = ["a", "b", "c"];
 // lose, draw, win
-let heroMoves = ["x", "y", "z"];
+const heroMoves = ["x", "y", "z"];
 // rock, paper, scissors
-let shapeValues = [1, 2, 3];
+const shapeValues = [1, 2, 3];
 
-let totalPoints = fileContents
+const totalPoints = fileContents
   .split("\n")
   .map((line) => {
-    let [opponentMove, heroMove] = line.split(" ");
+    const [opponentMove, heroMove] = line.split(" ");
     if (!opponentMove || !heroMove) return 0;
 
-    let opponentIndex = opponentMoves.indexOf(opponentMove.toLowerCase());
-    let heroIndex = heroMoves.indexOf(heroMove.toLowerCase());
+    const opponentIndex = opponentMoves.indexOf(opponentMove.toLowerCase());
+    const heroIndex = heroMoves.indexOf(heroMove.toLowerCase());
 
-    const getWinningShapeIndex = (opponentIndex) => {
-      if (opponentIndex == 2) return 0;
-      else return opponentIndex + 1;
-    };
-    const getLosingShapeIndex = (opponentIndex) => {
-      if (opponentIndex == 0) return 2;
-      else return opponentIndex - 1;
-    };
+    const getWinningShapeIndex = (opponentIndex: number) =>
+      opponentIndex == 2 ? 0 : opponentIndex + 1;
+
+    const getLosingShapeIndex = (opponentIndex: number) =>
+      opponentIndex == 0 ? 2 : opponentIndex - 1;
 
     let outcomePoints = 0;
     let shapePoints = 0;
@@ -48,7 +43,6 @@ let totalPoints = fileContents
     }
     return outcomePoints + shapePoints;
   })
-  .reduce((accumulator, pointsPerTurn) => {
-    return accumulator + pointsPerTurn;
-  });
+  .reduce((accumulator, pointsPerTurn) => accumulator + pointsPerTurn);
+
 console.log("total points:", totalPoints);
